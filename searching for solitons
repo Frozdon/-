@@ -1,0 +1,34 @@
+import math
+from tqdm import tqdm
+import numpy as np
+import matplotlib.pyplot as plt
+def generator_psi(a,x,t,N):
+    n=a/8
+    if a%2==1:
+        if N%2==0:
+            return (n**N)*np.cosh( n * (x - (n**2) * t))
+        else:
+            return (n**N) * np.sinh( n * (x - (n ** 2) * t))
+    else:
+        if N%2==1:
+            return (n**N)*np.cosh( n * (x - (n**2) * t))
+        else:
+            return (n**N) * np.sinh( n * (x - (n ** 2) * t))
+
+def generator_opr(x,t):
+    k=16
+    mas=np.zeros((k,k),dtype=np.double)
+    for i in range(k):
+        for j in range(k):
+            mas[i,j]=generator_psi(j+1,x,t,i)
+    _,alfa=np.linalg.slogdet(mas)
+    return alfa
+t=84
+l=5000
+X=np.linspace(-100,550,l)
+Y=np.zeros(l)
+for i in tqdm(range(l)):
+    f = lambda x: generator_opr(x,t)
+    Y[i]=5e1*(f(X[i]-2e-1)+f(X[i]+2e-1) - 2*f(X[i]))
+plt.plot(X,Y)
+plt.show()
